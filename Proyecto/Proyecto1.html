@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Personajes Sanrio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+      /* Estilos generales de la página */
+      body {
+        background-color: #F7DDD5;
+        font-family: Helvetica, Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+      }
+
+      /* Título superior centrado y estilizado */
+      h1 {
+        color: #D8A4AF;
+        font-size: 48px;
+        margin-bottom: 10px;
+      }
+
+      /* Texto explicativo inferior */
+      aside {
+        color: #6B403B;
+        font-size: 18px;
+        margin-top: 15px;
+      }
+
+      /* Canvas sin fondo para integrarse con el body */
+      canvas {
+        display: block;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Personajes</h1>
+    <canvas id="canvas" width="1000" height="700"></canvas>
+    <aside>Presiona las teclas numéricas (1 al 6) para cambiar de personaje.</aside>
+
+    <script>
+    window.onload = function () {
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+
+        var ancho = 400;
+        var alto = 400;
+        var x = (canvas.width - ancho) / 2;
+        var y = 100;
+
+        // Carga de imágenes
+        var hellokitty = new Image(); hellokitty.src = "hellokitty.jpe";
+        var chococat = new Image();   chococat.src = "chococat.jpe";
+        var keroppi = new Image();    keroppi.src = "keroppi.jpe";
+        var badtzmaru = new Image();   badtzmaru.src = "maru.jpe";
+        var tuxedosan = new Image();   tuxedosan.src = "tuxedo.jpe";
+        var moka = new Image();        moka.src = "moka.jpe";
+
+        function mostrarPersonaje(nombre, descripcion, imagen) {
+            function render() {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Nombre del personaje dentro del canvas
+                context.font = "bold 40px Helvetica";
+                context.fillStyle = "#D8A4AF";
+                context.textAlign = "center";
+                context.fillText(nombre, canvas.width / 2, 50);
+
+                // Imagen
+                context.drawImage(imagen, x, y, ancho, alto);
+
+                // Descripción dentro del canvas
+                context.font = "18px Helvetica";
+                context.fillStyle = "#6B403B";
+                context.textAlign = "center";
+                context.fillText(descripcion, canvas.width / 2, y + alto + 50);
+            }
+
+            if (imagen.complete) {
+                render();
+            } else {
+                imagen.onload = render;
+            }
+        }
+
+        // Personaje por defecto
+        mostrarPersonaje("Hello Kitty", "Una gatita alegre, amable y con un gran corazón.", hellokitty);
+
+        // Control numérico
+        function onKeyboardEvent(event) {
+            var tecla = event.key;
+
+            switch (tecla) {
+                case "1":
+                    mostrarPersonaje("Hello Kitty", "Una gatita alegre, amable y con un gran corazón.", hellokitty);
+                    break;
+                case "2":
+                    mostrarPersonaje("Chococat", "Un gatito muy listo que se entera de las noticias con sus bigotes.", chococat);
+                    break;
+                case "3":
+                    mostrarPersonaje("Keroppi", "Rana aventurera y enérgica a la que le gusta nadar.", keroppi);
+                    break;
+                case "4":
+                    mostrarPersonaje("Badtz-Maru", "Un pingüino con mucha actitud y sentido del humor.", badtzmaru);
+                    break;
+                case "5":
+                    mostrarPersonaje("Tuxedo Sam", "Un pingüino muy elegante al que le encanta comer.", tuxedosan);
+                    break;
+                case "6":
+                    mostrarPersonaje("Moka", "Amiga de Cinnamoroll, elegante y muy sociable.", moka);
+                    break;
+            }
+        }
+
+        window.addEventListener('keydown', onKeyboardEvent, false);
+    };
+    </script>
+  </body>
+</html>

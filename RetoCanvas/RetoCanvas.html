@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Rebote estilo DVD</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: white;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="dvdCanvas"></canvas>
+
+<script>
+  const canvas = document.getElementById("dvdCanvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const img = new Image();
+
+  img.src = "logo_dvd.png"; 
+
+  // Posición inicial y dimensiones de la imagen
+  let x = 100;
+  let y = 100;
+  const width = 120;
+  const height = 60;
+
+  // Velocidad de movimiento
+  let speedX = 3;
+  let speedY = 3;
+
+  function animar() {
+    // 1. Limpiar pantalla
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 2. Dibujar imagen
+    ctx.drawImage(img, x, y, width, height);
+
+    // 3. Rebotes en bordes horizontales y verticales
+    if (x + width >= canvas.width || x <= 0) {
+      speedX = -speedX;
+    }
+    if (y + height >= canvas.height || y <= 0) {
+      speedY = -speedY;
+    }
+
+    // 4. Mover la posición
+    x += speedX;
+    y += speedY;
+
+    requestAnimationFrame(animar);
+  }
+
+  // Iniciar cuando la imagen cargue desde tus archivos
+  img.onload = () => {
+    animar();
+  };
+</script>
+
+</body>
+</html>

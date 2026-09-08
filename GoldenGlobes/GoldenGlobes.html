@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Golden Globes</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #F7F2E6;
+      --text-dark: #1e293b;
+      --text-muted: #D9BC7A;
+      --accent-color: #d97706;
+      --clay-bg: #e2e8f0;
+      --clay-shadow-box: 20px 20px 40px #cbd5e1, -20px -20px 40px #ffffff,
+                         inset 2px 2px 4px #ffffff, inset -2px -2px 4px #cbd5e1;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* Espaciadores para permitir el scroll */
+    .spacer {
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    /* Tarjeta Claymorphism para la imagen del trofeo */
+    .clay-image-wrapper {
+      width: 90%;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 16px;
+      background: #f1f5f9;
+      border-radius: 28px;
+      box-shadow: var(--clay-shadow-box);
+      transition: transform 0.4s ease;
+    }
+
+    .clay-image-wrapper:hover {
+      transform: translateY(-5px);
+    }
+
+    .imagen {
+      display: block;
+      width: 100%;
+      height: 380px;
+      object-fit: cover;
+      object-position: center;
+      border-radius: 20px;
+    }
+
+    /* Sección Principal */
+    .connect-section {
+      padding: 60px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Viewport y Track del Carrusel 3D */
+    .carousel-viewport {
+      width: 100%;
+      height: 450px;
+      perspective: 1000px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 40px 0;
+    }
+
+    .carousel-track {
+      width: 260px;
+      height: 320px;
+      position: relative;
+      transform-style: preserve-3d;
+    }
+
+    .carousel-item {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-radius: 24px;
+    }
+
+    /* Estilo Claymorphism para la tarjeta */
+    .clay-box {
+      width: 100%;
+      height: 100%;
+      background: #f1f5f9;
+      border-radius: 24px;
+      box-shadow: var(--clay-shadow-box);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      overflow: hidden;
+      padding: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .clay-box h3 {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .clay-box p {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      line-height: 1.3;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Espaciador superior -->
+  <div class="spacer">
+    <h2 class="title" style="font-size: 2rem;">Golden Globes</h2>
+    <p class="subtitle">AWARD SEASON</p>
+  </div>
+
+  <!-- Contenedor con la imagen del Trofeo Golden Globe -->
+  <div class="clay-image-wrapper">
+    <img 
+      class="imagen" 
+      src="GG.jpe" 
+      alt="Golden Globe Trophy"
+    />
+  </div>
+
+  <!-- Sección Interactiva con el Carrusel -->
+  <section class="connect-section" id="connect-section">
+
+    <div class="scroll-reveal" style="text-align: center;">
+      <p class="subtitle">2020</p>
+      <h2 class="title">WINNERS</h2>
+    </div>
+
+    <div class="carousel-viewport">
+      <div class="carousel-track" id="track">
+
+        <div class="carousel-item">
+          <div class="clay-box">
+            <h3>Best Motion Picture - Drama</h3>
+            <p id="bestdrama">1917</p>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="clay-box">
+            <h3>Best Motion Picture - Musical or Comedy</h3>
+            <p id="bestcomedy">Once Upon a Time in Hollywood</p>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="clay-box">
+            <h3>Best performance by an actress in a motion picture - drama</h3>
+            <p id="bestactress">Renée Zellweger</p>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div class="clay-box">
+            <h3>Best performance by an actor in a motion picture - drama</h3>
+            <p id="bestactor">Joaquin Phoenix</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Espaciador inferior -->
+  <div class="spacer"></div>
+
+  <!-- Librerías de GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Lógica de Animación 3D en Scroll -->
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const items = document.querySelectorAll('.carousel-item');
+    const totalItems = items.length;
+    const radius = 260; 
+
+    items.forEach((item, index) => {
+      const angle = (index / totalItems) * Math.PI * 2;
+      const x = Math.sin(angle) * radius;
+      const z = Math.cos(angle) * radius;
+      const rotationY = (angle * 180) / Math.PI;
+
+      gsap.set(item, {
+        x: x,
+        z: z,
+        rotationY: rotationY
+      });
+    });
+
+    gsap.to("#track", {
+      rotationY: 360,
+      ease: "none",
+      scrollTrigger: {
+        trigger: "#connect-section",
+        start: "top center",
+        end: "bottom center",
+        scrub: 1
+      }
+    });
+  </script>
+</body>
+</html>

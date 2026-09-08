@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Arte en Canvas</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      /* Replicamos el diseño de fondo usando la imagen como base */
+      background-image: url('image_3.png'); /* Asegúrate de tener la imagen en la misma carpeta */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    canvas {
+      /* Mantenemos tu borde marrón original */
+      border: 3px solid brown;
+      /* Hacemos el fondo del canvas transparente para ver la imagen detrás */
+      background-color: transparent;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1); /* Añadimos una sombra suave */
+    }
+  </style>
+
+<script>
+    // Usamos window.onload para asegurarnos de que el DOM esté listo
+    window.onload = function() {
+        var canvas = document.getElementById('micanvas');
+        var ctx = canvas.getContext('2d');
+
+        // Estado inicial de la animación (ángulo en radianes)
+        var currentAngle = 0;
+
+        // Definimos las propiedades de las figuras inspiradas en la imagen
+        var shapeWidth = 100;
+        var shapeHeight = 100;
+
+        function animate() {
+            // 1. Limpiar el lienzo en cada frame
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Incrementar el ángulo de rotación
+            currentAngle += 0.02; // Velocidad de giro
+
+            // --- FIGURA 1: Círculo (arriba derecha) ---
+            var centerX1 = canvas.width - 150;
+            var centerY1 = 150;
+            
+            ctx.save(); // Guardar el estado actual del canvas
+            ctx.translate(centerX1, centerY1); // Mover origen al centro de la figura
+            ctx.rotate(currentAngle); // Rotar el canvas sobre ese origen
+            
+            ctx.fillStyle = '#E1A2E1'; // Lavanda sólido (inspirado en la imagen)
+            ctx.beginPath();
+            // Dibujar el círculo centrado en (0,0) con radio 40
+            ctx.arc(0, 0, 40, 0, Math.PI * 2, true);
+            ctx.fill();
+            ctx.restore(); // Restaurar el estado original del canvas
+
+            // --- FIGURA 2: Forma '9' estilizada (abajo derecha) ---
+            var centerX2 = canvas.width - 150;
+            var centerY2 = canvas.height - 150;
+
+            ctx.save();
+            ctx.translate(centerX2, centerY2);
+            ctx.rotate(-currentAngle * 1.5); // Rotar en sentido opuesto y más rápido
+
+            ctx.fillStyle = '#78A9C1'; // Azul grisáceo sólido
+            ctx.beginPath();
+            // Dibujar una forma que simule el '9'
+            ctx.arc(-15, -15, 30, Math.PI * 0.7, Math.PI * 2.3, false); // La "cabeza"
+            ctx.lineTo(-15, 45); // El "pie"
+            ctx.lineWidth = 15;
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.stroke();
+            ctx.restore();
+
+            // --- FIGURA 3: Forma 'X' estilizada (abajo izquierda) ---
+            var centerX3 = 150;
+            var centerY3 = canvas.height - 150;
+
+            ctx.save();
+            ctx.translate(centerX3, centerY3);
+            ctx.rotate(currentAngle * 0.8); // Rotación más lenta
+
+            ctx.fillStyle = '#A3CB56'; // Verde lima sólido
+            ctx.beginPath();
+            // Dibujar una 'X' gruesa
+            ctx.lineWidth = 15;
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.moveTo(-40, -40);
+            ctx.lineTo(40, 40);
+            ctx.moveTo(40, -40);
+            ctx.lineTo(-40, 40);
+            ctx.stroke();
+            ctx.restore();
+
+            // Solicitar el siguiente frame de animación
+            requestAnimationFrame(animate);
+        }
+
+        // Iniciar la animación
+        animate();
+    }
+</script>
+
+  </head>
+<body>
+   <!-- El canvas es transparente sobre la imagen de fondo -->
+   <canvas id="micanvas" width="800" height="600"></canvas>
+</body>
+</html>
