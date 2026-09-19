@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rotate to Mouse - CD</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #400101; /* Red Wine */
+      color: #F2913D; /* Flame Orange */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Texto gigante de fondo estilo primera imagen */
+    .bg-text {
+      position: absolute;
+      font-size: 15vw;
+      font-weight: 900;
+      color: #730C02; /* Paprika */
+      opacity: 0.35;
+      user-select: none;
+      z-index: 0;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 0.8;
+    }
+
+    canvas {
+      position: relative;
+      z-index: 1;
+      cursor: crosshair;
+    }
+
+    aside {
+      position: absolute;
+      bottom: 20px;
+      z-index: 2;
+      font-size: 0.9rem;
+      color: #BF3604; /* Fire */
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background: rgba(64, 1, 1, 0.6);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #730C02;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Texto de fondo decorativo -->
+  <div class="bg-text">DON'T<br>CARE</div>
+
+  <!-- Canvas donde se dibuja el CD -->
+  <canvas id="canvas" width="1000" height="700"></canvas>
+  <aside>Move mouse on canvas element.</aside>
+
+  <script>
+    // Utilidad captureMouse integrada
+    var utils = {
+      captureMouse: function (element) {
+        var mouse = { x: 0, y: 0 };
+        element.addEventListener('mousemove', function (event) {
+          var rect = element.getBoundingClientRect();
+          mouse.x = event.clientX - rect.left;
+          mouse.y = event.clientY - rect.top;
+        }, false);
+        return mouse;
+      }
+    };
+
+    window.onload = function () {
+      var canvas = document.getElementById('canvas'),
+          context = canvas.getContext('2d'),
+          mouse = utils.captureMouse(canvas),
+          pelota = new Image();
+      
+      // Imagen del disco PNG
+      pelota.src = 'cd.png';
+
+      (function drawFrame () {
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.save();
+        
+        var x = canvas.width / 2,
+            y = canvas.height / 2;
+
+        context.translate(x, y);
+        var dx = mouse.x - x,
+            dy = mouse.y - y;
+        
+        var radianes = Math.atan2(dy, dx);
+        context.rotate(radianes);
+        
+        // Si la imagen ya cargó, se dibuja centrada
+        if (pelota.complete && pelota.naturalWidth !== 0) {
+          context.drawImage(pelota, -pelota.width / 2, -pelota.height / 2);
+        }
+        
+        context.restore();
+      }());
+    };
+  </script>
+</body>
+</html>
