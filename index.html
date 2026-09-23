@@ -3,75 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My First Page!!</title>
+    <title>Index de Actividades</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            background-color: #F5EFC6;
+        :root {
+            --bg-page: #f9f2f5;
+            --pink-banner: #ffd0e0;
+            --pink-card: #ffe8f0;
+            --pink-border: #f4a2be;
+            --pink-accent: #c2185b;
+            --text-dark: #8e1541;
+            --card-bg: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 40px;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-dark);
+            font-family: 'Montserrat', sans-serif;
+            padding: 30px 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Banner Superior e Inspirado en la Flor de la imagen */
+        .header-banner {
+            width: 100%;
+            max-width: 900px;
+            background-color: var(--pink-banner);
+            border-radius: 24px;
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(226, 120, 155, 0.15);
+        }
+
+        /* Silueta de flor de fondo */
+        .header-banner::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            background: rgba(255, 255, 255, 0.45);
+            clip-path: polygon(
+                50% 0%, 65% 25%, 95% 15%, 80% 40%, 100% 65%, 75% 75%,
+                65% 100%, 45% 80%, 15% 95%, 25% 65%, 0% 45%, 25% 30%
+            );
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
         h1 {
-            color: #AE5369;
-            text-align: center;
-            font-family: Helvetica;
+            font-family: 'Comfortaa', cursive;
+            color: var(--pink-accent);
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: lowercase;
         }
 
         h2 {
-            color: #D58198;
-            text-align: center;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, sans-serif;
+            font-family: 'Comfortaa', cursive;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 12px;
         }
 
         p {
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: 15px;
-            text-align: center;
+            font-size: 0.95rem;
+            color: var(--pink-accent);
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Imagen del perfil */
+        .profile-container {
+            margin: 20px auto 10px;
+            width: 130px;
+            height: 130px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 3px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(194, 24, 91, 0.15);
         }
 
         .imagen {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
-            width: 500px;
-            max-width: 90%;
-            height: auto;
-            margin: 30px auto;
-            border-radius: 15px;
+        }
+
+        /* Sección de Actividades */
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .section-title {
+            font-family: 'Comfortaa', cursive;
+            font-size: 1.1rem;
+            color: var(--pink-accent);
+            margin-bottom: 20px;
+            text-transform: lowercase;
+            padding-left: 5px;
+        }
+
+        /* Retícula de Actividades inspirada en las tarjetas */
+        .grid-actividades {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            list-style: none;
+            counter-reset: actividad-counter;
+        }
+
+        .grid-actividades li {
+            counter-increment: actividad-counter;
+        }
+
+        .card-link {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: var(--card-bg);
+            border: 1.5px solid var(--pink-border);
+            border-radius: 18px;
+            padding: 20px;
+            min-height: 130px;
+            text-decoration: none;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+            position: relative;
+        }
+
+        .card-link::before {
+            content: "(" counter(actividad-counter, decimal-leading-zero) ") ";
+            font-family: 'Comfortaa', cursive;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--pink-accent);
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        /* Efectos Hover */
+        .card-link:hover {
+            transform: translateY(-4px);
+            background-color: var(--pink-card);
+            box-shadow: 0 6px 15px rgba(244, 162, 190, 0.3);
+            border-color: var(--pink-accent);
+        }
+
+        .card-link:hover .card-title {
+            color: var(--pink-accent);
         }
     </style>
 </head>
 
 <body>
 
-    <h1>BIENVENIDO</h1>
+    <!-- Header con estética de la flor -->
+    <header class="header-banner">
+        <div class="header-content">
+            <h1>bienvenido</h1>
+            <h2>Este es el index de mis actividades...</h2>
+            
+            <div class="profile-container">
+                <img class="imagen" src="Yo.jpe" alt="Mi imagen">
+            </div>
 
-    <h2>Este es el index de mis actividades...</h2>
+            <p>¡gracias por visitar!</p>
+        </div>
+    </header>
 
-    <p>Gracias</p>
+    <!-- Sección principal de tarjetas -->
+    <main class="container">
+        <h3 class="section-title">mis actividades</h3>
 
-    <img class="imagen" src="Yo.jpe" alt="Mi imagen">
-    <ol>
-        <li>
-            <a href="PB/pagina1.html">Pagina basica</a>
-        </li>
-        <li>
-            <a href="GoldenGlobes/GoldenGlobes.html">Golden Globes 2020</a>
-        </li>
-        <li>
-            <a href="RetoCanvas/RetoCanvas.html">Reto Canvas</a>
-        </li>
-         <li>
-            <a href="ArteCanvas/ArteCanvas.html">Arte en Canvas</a>
-        </li>
-         <li>
-            <a href="Proyecto/Proyecto1.html">Proyecto Primer Parcial</a>
-        </li>
-         <li>
-            <a href="Mouse/mouse.html">Mouse</a>
-        </li>
-        <li>
-            <a href="A3/A3.html">Onda sinoidal/coseno </a>
-        </li>
-    </ol>
+        <ol class="grid-actividades">
+            <li>
+                <a class="card-link" href="PB/pagina1.html">
+                    <span class="card-title">Página básica</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="GoldenGlobes/GoldenGlobes.html">
+                    <span class="card-title">Golden Globes 2020</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="RetoCanvas/RetoCanvas.html">
+                    <span class="card-title">Reto Canvas</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="ArteCanvas/ArteCanvas.html">
+                    <span class="card-title">Arte en Canvas</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="Proyecto/Proyecto1.html">
+                    <span class="card-title">Proyecto Primer Parcial</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="Mouse/mouse.html">
+                    <span class="card-title">Mouse</span>
+                </a>
+            </li>
+            <li>
+                <a class="card-link" href="A3/A3.html">
+                    <span class="card-title">Onda senoidal / coseno</span>
+                </a>
+            </li>
+        </ol>
+    </main>
+
 </body>
 </html>
