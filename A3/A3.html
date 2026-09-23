@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flor Trigonométrica PNG</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts para tipografía retro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Pacifico&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-peony: #E9ACC8;
+            --accent-purple: #9C3D5A;
+            --canvas-bg: #F4D77A;
+            --card-bg: #FFFDF5;
+        }
+
+        body {
+            background-color: var(--bg-peony);
+            color: var(--accent-purple);
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        .font-accent {
+            font-family: 'Pacifico', cursive;
+        }
+
+        /* Estilo personalizado de los Sliders con temática retro */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: #EADFC7;
+            height: 10px;
+            border-radius: 999px;
+            outline: none;
+            border: 2px solid var(--accent-purple);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #DA74A3;
+            border: 2px solid var(--accent-purple);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            box-shadow: 0px 2px 0px var(--accent-purple);
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #E05F38;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #DA74A3;
+            border: 2px solid var(--accent-purple);
+            cursor: pointer;
+            box-shadow: 0px 2px 0px var(--accent-purple);
+        }
+
+        .retro-card {
+            background: var(--card-bg);
+            border: 3px solid var(--accent-purple);
+            box-shadow: 5px 5px 0px var(--accent-purple);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Encabezado Sun Club -->
+    <header class="text-center mb-5">
+        <span class="font-accent text-3xl text-[#9C3D5A] block -rotate-3 mb-0.5">Flor</span>
+        <h1 class="text-3xl md:text-4xl font-bold uppercase tracking-tight text-[#9C3D5A]"> Trigonométrica</h1>
+    </header>
+
+    <!-- Contenido Principal Centrado -->
+    <main class="w-full max-w-sm flex flex-col items-center gap-5">
+
+        <!-- CANVAS CENTRADO -->
+        <div class="retro-card rounded-3xl p-3 w-full aspect-square max-w-[340px] flex items-center justify-center relative overflow-hidden bg-[#F4D77A]">
+            <canvas id="canvasFlor" class="w-full h-full block z-10"></canvas>
+        </div>
+
+        <!-- SLIDERS CENTRADOS ABAJO DE LA IMAGEN -->
+        <div class="retro-card w-full max-w-[340px] rounded-3xl p-5 flex flex-col gap-4">
+            
+            <!-- SLIDER 1: ROTACIÓN -->
+            <div class="flex flex-col gap-1">
+                <label for="inputRotacion" class="text-xs font-bold text-[#9C3D5A]">Velocidad de Rotación:</label>
+                <input type="range" id="inputRotacion" min="0" max="3" step="0.1" value="1">
+            </div>
+
+            <!-- SLIDER 2: ESCALA -->
+            <div class="flex flex-col gap-1">
+                <label for="inputEscala" class="text-xs font-bold text-[#9C3D5A]">Tamaño / Escala:</label>
+                <input type="range" id="inputEscala" min="40" max="160" step="1" value="100">
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        // =========================================================
+        // 1. ARCHIVO DE IMAGEN 'Flor.png'
+        // =========================================================
+        const RUTA_IMAGEN = 'Flor.png';
+
+        // Configuración de Canvas
+        const canvas = document.getElementById('canvasFlor');
+        const ctx = canvas.getContext('2d');
+
+        // Sliders
+        const inputRotacion = document.getElementById('inputRotacion');
+        const inputEscala = document.getElementById('inputEscala');
+
+        // Estado de la Imagen
+        const imagenFlor = new Image();
+        let imagenCargada = false;
+
+        imagenFlor.onload = () => {
+            imagenCargada = true;
+        };
+        imagenFlor.onerror = () => {
+            console.warn(`No se encontró "${RUTA_IMAGEN}". Se usará la flor vectorial de prueba.`);
+            imagenCargada = false;
+        };
+
+        // Asignar el atributo src de la imagen
+        imagenFlor.src = RUTA_IMAGEN;
+
+        // Ajustar resolución del canvas
+        function redimensionarCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width * (window.devicePixelRatio || 2);
+            canvas.height = rect.height * (window.devicePixelRatio || 2);
+            ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
+        }
+
+        window.addEventListener('resize', redimensionarCanvas);
+        redimensionarCanvas();
+
+        let tiempo = 0;
+
+        // Dibujar flor vectorial alternativa si no está cargada Flor.png
+        function dibujarFlorFallback() {
+            const numPetalos = 8;
+            const radioBase = 35;
+            const ampPetalo = 22;
+
+            ctx.beginPath();
+            for (let i = 0; i <= 360; i++) {
+                const theta = (i * Math.PI / 180);
+                const r = radioBase + Math.sin(numPetalos * theta) * ampPetalo;
+                const px = r * Math.cos(theta);
+                const py = r * Math.sin(theta);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.fillStyle = '#DA74A3';
+            ctx.fill();
+            ctx.strokeStyle = '#9C3D5A';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Centro
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFDF5';
+            ctx.fill();
+            ctx.strokeStyle = '#9C3D5A';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+        }
+
+        // Bucle de animación trigonométrica (Seno + Coseno)
+        function animar() {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Obtener valores de controles
+            const velRotacion = parseFloat(inputRotacion.value);
+            const porcentajeEscala = parseFloat(inputEscala.value) / 100;
+
+            tiempo += 0.02;
+
+            // 1. POSICIÓN (Flotación armónica con Sin y Cos)
+            const centroX = width / 2 + Math.cos(tiempo * 0.8) * 10;
+            const centroY = height / 2 + Math.sin(tiempo * 1.1) * 10;
+
+            // 2. ROTACIÓN (Ángulo modificado por el tiempo y slider de rotación)
+            const angulo = (tiempo * velRotacion * 0.8) + Math.cos(tiempo * 0.5) * 0.1;
+
+            // 3. ESCALA (Escala del slider + respiración con Math.sin)
+            const pulsacionSeno = Math.sin(tiempo * 1.5) * 0.05;
+            const escalaFinal = porcentajeEscala * (1 + pulsacionSeno);
+
+            ctx.save();
+            ctx.translate(centroX, centroY);
+            ctx.rotate(angulo);
+            ctx.scale(escalaFinal, escalaFinal);
+
+            if (imagenCargada) {
+                // Dibujar el archivo 'Flor.png' centrado
+                const anchoRef = 180;
+                const altoRef = (imagenFlor.height / imagenFlor.width) * anchoRef;
+                ctx.drawImage(imagenFlor, -anchoRef / 2, -altoRef / 2, anchoRef, altoRef);
+            } else {
+                // Dibujar flor vectorial predeterminada mientras carga o si falla
+                dibujarFlorFallback();
+            }
+
+            ctx.restore();
+
+            requestAnimationFrame(animar);
+        }
+
+        requestAnimationFrame(animar);
+    </script>
+</body>
+</html>
