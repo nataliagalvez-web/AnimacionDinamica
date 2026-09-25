@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mario Star Canvas Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #F2D88F;
+            font-family: 'Fredoka One', 'Outfit', cursive, sans-serif;
+            /* Patrón de fondo sutil al estilo Super Mario World */
+            background-image: radial-gradient(#E5C978 15%, transparent 16%), radial-gradient(#E5C978 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+        }
+
+        .mario-title {
+            color: #F08C21;
+            text-shadow: 2px 2px 0px #ffffff, 4px 4px 0px rgba(0,0,0,0.15);
+        }
+
+        /* Borde blanco idéntico al de la imagen de referencia */
+        .canvas-container {
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <header class="text-center mb-4">
+        <h1 class="mario-title text-4xl md:text-5xl lg:text-6xl tracking-wide select-none">
+            Mario Star!
+        </h1>
+    </header>
+
+    <main class="w-full max-w-4xl flex justify-center items-center">
+        <div class="canvas-container w-full max-w-[800px]">
+            <canvas id="marioCanvas" width="800" height="500" class="w-full h-auto block rounded-sm bg-sky-200"></canvas>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('marioCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Referencias de imágenes
+        const bgImg = new Image();
+        let bgLoaded = false;
+        // Intenta cargar fondo.jpe (y fallback a fondo.jpg si falla)
+        bgImg.src = 'fondo.jpe';
+
+        bgImg.onload = () => { bgLoaded = true; };
+        bgImg.onerror = () => {
+            // Intenta con la extensión alternativa .jpg por conveniencia
+            const bgImgAlt = new Image();
+            bgImgAlt.src = 'fondo.jpg';
+            bgImgAlt.onload = () => {
+                bgImg.src = bgImgAlt.src;
+                bgLoaded = true;
+            };
+        };
+
+        const starImg = new Image();
+        let starLoaded = false;
+        starImg.src = 'star.png';
+        starImg.onload = () => { starLoaded = true; };
+
+        // Configuración de la estrella
+        const star = {
+            x: 50,
+            y: 250,
+            width: 110,
+            height: 110,
+            speedX: 3,
+            direction: 1, // 1: derecha, -1: izquierda
+            angle: 0,
+            amplitude: 60,  // Altura del rebote senoidal
+            frequency: 0.05, // Frecuencia de la onda senoidal
+            baseY: 250       // Altura central de la onda
+        };
+
+        function drawFallbackBackground() {
+            // Cielo
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#A0C8F0');
+            skyGradient.addColorStop(1, '#D8E8F8');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Nubes
+            ctx.fillStyle = '#FFFFFF';
+            drawCloud(120, 80, 0.8);
+            drawCloud(600, 70, 0.7);
+
+            // Montañas verdes traseras
+            ctx.fillStyle = '#68B048';
+            ctx.beginPath();
+            ctx.arc(580, 380, 200, Math.PI, 0, false);
+            ctx.fill();
+
+            // Montaña izquierda
+            ctx.fillStyle = '#78C050';
+            ctx.beginPath();
+            ctx.arc(200, 420, 180, Math.PI, 0, false);
+            ctx.fill();
+
+            // Arbustos / Colinas frontales
+            ctx.fillStyle = '#489828';
+            ctx.beginPath();
+            ctx.arc(100, 480, 100, Math.PI, 0, false);
+            ctx.arc(420, 460, 120, Math.PI, 0, false);
+            ctx.arc(720, 480, 90, Math.PI, 0, false);
+            ctx.fill();
+
+            // Tuberías verdes
+            drawPipe(630, 310, 60, 140);
+
+            // Bloques "?"
+            drawQuestionBlock(350, 150, 36);
+            drawQuestionBlock(580, 330, 32);
+            drawQuestionBlock(615, 330, 32);
+
+            // Suelo de pasto
+            ctx.fillStyle = '#50A030';
+            ctx.fillRect(0, 450, canvas.width, 10);
+            ctx.fillStyle = '#A86830';
+            ctx.fillRect(0, 460, canvas.width, 40);
+        }
+
+        function drawCloud(x, y, scale) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.scale(scale, scale);
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.arc(20, -10, 25, 0, Math.PI * 2);
+            ctx.arc(45, 0, 20, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawPipe(x, y, w, h) {
+            ctx.fillStyle = '#288818';
+            ctx.fillRect(x, y + 20, w, h - 20);
+            ctx.fillRect(x - 5, y, w + 10, 25);
+            ctx.strokeStyle = '#185808';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x, y + 20, w, h - 20);
+            ctx.strokeRect(x - 5, y, w + 10, 25);
+        }
+
+        function drawQuestionBlock(x, y, size) {
+            ctx.fillStyle = '#E89020';
+            ctx.fillRect(x, y, size, size);
+            ctx.strokeStyle = '#804000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, size, size);
+
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = `bold ${size * 0.7}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('?', x + size / 2, y + size / 2);
+        }
+
+        function drawFallbackStar(x, y, width, height) {
+            ctx.save();
+            ctx.translate(x + width / 2, y + height / 2);
+
+            // Dibujar estrella de 5 puntas
+            ctx.beginPath();
+            const points = 5;
+            const outerRadius = width / 2;
+            const innerRadius = width / 4;
+
+            for (let i = 0; i < points * 2; i++) {
+                const r = (i % 2 === 0) ? outerRadius : innerRadius;
+                const a = (i * Math.PI) / points - Math.PI / 2;
+                const px = r * Math.cos(a);
+                const py = r * Math.sin(a);
+                if (i === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.closePath();
+
+            // Color amarillo brillo de estrella de Mario
+            ctx.fillStyle = '#FFE600';
+            ctx.fill();
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Ojos negros característicos
+            ctx.fillStyle = '#000000';
+            const eyeWidth = width * 0.08;
+            const eyeHeight = height * 0.22;
+
+            // Ojo izquierdo
+            ctx.beginPath();
+            ctx.ellipse(-width * 0.12, -height * 0.05, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ojo derecho
+            ctx.beginPath();
+            ctx.ellipse(width * 0.12, -height * 0.05, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Brillo blanco de los ojos
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(-width * 0.12, -height * 0.1, eyeWidth * 0.5, 0, Math.PI * 2);
+            ctx.arc(width * 0.12, -height * 0.1, eyeWidth * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function animate() {
+            // 1. Limpiar Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Renderizar Fondo (Imagen o Fallback Canvas)
+            if (bgLoaded) {
+                ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+            } else {
+                drawFallbackBackground();
+            }
+
+            // 3. Actualizar Posición Horizontal (Desplazamiento horizontal con rebote)
+            star.x += star.speedX * star.direction;
+
+            if (star.x + star.width >= canvas.width - 20) {
+                star.direction = -1; // Cambiar a la izquierda
+            } else if (star.x <= 20) {
+                star.direction = 1;  // Cambiar a la derecha
+            }
+
+            // 4. Movimiento Senoidal Vertical (Onda senoidal usando Math.sin)
+            star.angle += star.frequency;
+            star.y = star.baseY + Math.sin(star.angle) * star.amplitude;
+
+            // 5. Renderizar Estrella (Imagen o Fallback Canvas)
+            if (starLoaded) {
+                ctx.drawImage(starImg, star.x, star.y, star.width, star.height);
+            } else {
+                drawFallbackStar(star.x, star.y, star.width, star.height);
+            }
+
+            // Bucle continuo de animación
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = function() {
+            animate();
+        };
+    </script>
+</body>
+</html>
