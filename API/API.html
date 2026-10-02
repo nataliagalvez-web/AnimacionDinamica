@@ -1,0 +1,404 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>API</title>
+    <style>
+      body {
+        background-color: #9a3f3f;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 0;
+        padding: 30px 10px;
+      }
+
+      h1 {
+        color: #fbf9d1;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+      }
+
+      .canvas-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 25px;
+        width: 100%;
+        max-width: 650px;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      .card h2 {
+        color: #fbf9d1;
+        font-size: 1.2rem;
+        margin: 0 0 8px 0;
+      }
+
+      canvas {
+        background-color: #fbf9d1;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      }
+    </style>
+  </head>
+  <body>
+
+    <h1>API</h1>
+
+    <div class="canvas-container">
+      <!-- 1. CASITA -->
+      <div class="card">
+        <h2>Casita</h2>
+        <canvas id="canvas1" width="600" height="360"></canvas>
+      </div>
+
+      <!-- 2. HONGUITO -->
+      <div class="card">
+        <h2>Honguito</h2>
+        <canvas id="canvas2" width="600" height="360"></canvas>
+      </div>
+
+      <!-- 3. ESTRELLA -->
+      <div class="card">
+        <h2>Estrella</h2>
+        <canvas id="canvas3" width="600" height="360"></canvas>
+      </div>
+
+      <!-- 4. LUNA -->
+      <div class="card">
+        <h2>Luna</h2>
+        <canvas id="canvas4" width="600" height="360"></canvas>
+      </div>
+
+      <!-- 5. LIBRE (ERIZO) -->
+      <div class="card">
+        <h2>Erizo (Libre)</h2>
+        <canvas id="canvas5" width="600" height="360"></canvas>
+      </div>
+
+      <!-- 6. EXTRAS: ZORRITO CETYS -->
+      <div class="card">
+        <h2>Zorrito CETYS</h2>
+        <canvas id="canvas6" width="600" height="360"></canvas>
+      </div>
+    </div>
+
+    <script>
+      window.onload = function () {
+
+        // ==========================================
+        // 1. CASITA (Contorno)
+        // ==========================================
+        (function drawCasita() {
+          var canvas = document.getElementById('canvas1');
+          var ctx = canvas.getContext('2d');
+          ctx.strokeStyle = '#222222';
+          ctx.lineWidth = 4;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          ctx.beginPath();
+          // Techo
+          ctx.moveTo(300, 80);
+          ctx.lineTo(180, 170);
+          ctx.lineTo(420, 170);
+          ctx.closePath();
+
+          // Paredes / Estructura base
+          ctx.moveTo(200, 170);
+          ctx.lineTo(200, 290);
+          ctx.lineTo(400, 290);
+          ctx.lineTo(400, 170);
+
+          // Puerta
+          ctx.moveTo(270, 290);
+          ctx.lineTo(270, 210);
+          ctx.lineTo(330, 210);
+          ctx.lineTo(330, 290);
+
+          // Ventana
+          ctx.moveTo(345, 190);
+          ctx.rect(345, 190, 35, 35);
+
+          ctx.stroke();
+        })();
+
+
+        // ==========================================
+        // 2. HONGUITO (Contorno)
+        // ==========================================
+        (function drawHonguito() {
+          var canvas = document.getElementById('canvas2');
+          var ctx = canvas.getContext('2d');
+          ctx.strokeStyle = '#222222';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          ctx.beginPath();
+          // Tallo
+          ctx.moveTo(245, 200);
+          ctx.bezierCurveTo(235, 240, 220, 280, 250, 305);
+          ctx.bezierCurveTo(270, 320, 330, 320, 350, 305);
+          ctx.bezierCurveTo(380, 280, 365, 240, 355, 200);
+
+          // Sombrero
+          ctx.bezierCurveTo(420, 200, 440, 170, 400, 130);
+          ctx.bezierCurveTo(340, 60, 260, 60, 200, 130);
+          ctx.bezierCurveTo(160, 170, 180, 200, 245, 200);
+
+          ctx.stroke();
+        })();
+
+
+        // ==========================================
+        // 3. ESTRELLA (Contorno)
+        // ==========================================
+        (function drawEstrella() {
+          var canvas = document.getElementById('canvas3');
+          var ctx = canvas.getContext('2d');
+          ctx.strokeStyle = '#222222';
+          ctx.lineWidth = 4;
+          ctx.lineJoin = 'round';
+
+          var cx = 300, cy = 180, spikes = 5, outerRadius = 100, innerRadius = 45;
+          var rot = Math.PI / 2 * 3;
+          var x = cx;
+          var y = cy;
+          var step = Math.PI / spikes;
+
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - outerRadius);
+
+          for (var i = 0; i < spikes; i++) {
+            x = cx + Math.cos(rot) * outerRadius;
+            y = cy + Math.sin(rot) * outerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+
+            x = cx + Math.cos(rot) * innerRadius;
+            y = cy + Math.sin(rot) * innerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+          }
+          ctx.lineTo(cx, cy - outerRadius);
+          ctx.closePath();
+          ctx.stroke();
+        })();
+
+
+        // ==========================================
+        // 4. LUNA (Contorno Completo)
+        // ==========================================
+        (function drawLuna() {
+          var canvas = document.getElementById('canvas4');
+          var ctx = canvas.getContext('2d');
+          ctx.strokeStyle = '#222222';
+          ctx.lineWidth = 5;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          ctx.beginPath();
+          ctx.moveTo(250, 60);
+          ctx.bezierCurveTo(390, 80, 410, 270, 170, 300);
+          ctx.bezierCurveTo(310, 240, 310, 110, 250, 60);
+          ctx.closePath();
+
+          ctx.stroke();
+        })();
+
+
+        // ==========================================
+        // 5. LIBRE - ERIZO (Contorno)
+        // ==========================================
+        (function drawErizo() {
+          var canvas = document.getElementById('canvas5');
+          var ctx = canvas.getContext('2d');
+          ctx.strokeStyle = '#222222';
+          ctx.lineWidth = 4;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          ctx.beginPath();
+          ctx.arc(152, 212, 7, 0, Math.PI * 2);
+
+          ctx.moveTo(159, 216);
+          ctx.bezierCurveTo(180, 245, 210, 270, 245, 270);
+
+          // Pata delantera
+          ctx.bezierCurveTo(240, 290, 230, 305, 245, 310);
+          ctx.bezierCurveTo(260, 312, 265, 290, 270, 270);
+
+          // Panza
+          ctx.lineTo(390, 270);
+
+          // Pata trasera
+          ctx.bezierCurveTo(395, 295, 385, 310, 405, 312);
+          ctx.bezierCurveTo(425, 310, 420, 285, 435, 260);
+
+          // Púas
+          var spikes = [
+            [465, 245], [440, 230], [480, 215], [445, 200],
+            [475, 175], [435, 165], [460, 135], [415, 135],
+            [430, 100], [385, 110], [390, 75],  [350, 95],
+            [345, 60],  [310, 85],  [295, 55],  [270, 85],
+            [240, 65],  [230, 100], [195, 90],  [195, 125],
+            [165, 125], [175, 155]
+          ];
+
+          for (var i = 0; i < spikes.length; i++) {
+            ctx.lineTo(spikes[i][0], spikes[i][1]);
+          }
+
+          ctx.bezierCurveTo(140, 188, 144, 204, 152, 212);
+
+          ctx.stroke();
+        })();
+
+
+        // ==========================================
+        // 6. EXTRAS: ZORRITO CETYS (Geometría Simétrica + Gradiente)
+        // ==========================================
+        (function drawZorritoCETYS() {
+          var canvas = document.getElementById('canvas6');
+          var ctx = canvas.getContext('2d');
+
+          // Gradiente Amarillo/Dorado CETYS
+          var gradient = ctx.createLinearGradient(180, 50, 420, 310);
+          gradient.addColorStop(0, '#fff200');
+          gradient.addColorStop(0.5, '#ffd700');
+          gradient.addColorStop(1, '#ff9100');
+
+          ctx.lineJoin = 'miter';
+          ctx.lineCap = 'square';
+
+          // --- 1. BORDE EXTERIOR BLANCO ---
+          ctx.beginPath();
+          ctx.moveTo(300, 335);
+          ctx.lineTo(165, 210);
+          ctx.lineTo(185, 45);
+          ctx.lineTo(255, 130);
+          ctx.lineTo(300, 105);
+          ctx.lineTo(345, 130);
+          ctx.lineTo(415, 45);
+          ctx.lineTo(435, 210);
+          ctx.closePath();
+          ctx.fillStyle = '#ffffff';
+          ctx.fill();
+          ctx.strokeStyle = '#111111';
+          ctx.lineWidth = 5;
+          ctx.stroke();
+
+          // --- 2. MARCO EXTERIOR NEGRO ---
+          ctx.beginPath();
+          ctx.moveTo(300, 318);
+          ctx.lineTo(178, 202);
+          ctx.lineTo(196, 60);
+          ctx.lineTo(258, 138);
+          ctx.lineTo(300, 118);
+          ctx.lineTo(342, 138);
+          ctx.lineTo(404, 60);
+          ctx.lineTo(422, 202);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // --- 3. CARA DEL ZORRO CON GRADIENTE ---
+          ctx.beginPath();
+          ctx.moveTo(300, 292);
+          ctx.lineTo(195, 192);
+          ctx.lineTo(208, 85);
+          ctx.lineTo(262, 150);
+          ctx.lineTo(300, 132);
+          ctx.lineTo(338, 150);
+          ctx.lineTo(392, 85);
+          ctx.lineTo(405, 192);
+          ctx.closePath();
+          ctx.fillStyle = gradient;
+          ctx.fill();
+
+          // --- 4. INTERIOR DE LAS OREJAS (NEGRO) ---
+          // Izquierda
+          ctx.beginPath();
+          ctx.moveTo(220, 98);
+          ctx.lineTo(250, 142);
+          ctx.lineTo(232, 160);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // Derecha
+          ctx.beginPath();
+          ctx.moveTo(380, 98);
+          ctx.lineTo(350, 142);
+          ctx.lineTo(368, 160);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // --- 5. DETALLES INFERIORES NEGROS ---
+          ctx.beginPath();
+          ctx.moveTo(220, 205);
+          ctx.lineTo(300, 275);
+          ctx.lineTo(240, 240);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(380, 205);
+          ctx.lineTo(300, 275);
+          ctx.lineTo(360, 240);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // --- 6. OJOS RASGADOS ---
+          // Izquierdo
+          ctx.beginPath();
+          ctx.moveTo(230, 180);
+          ctx.lineTo(282, 212);
+          ctx.lineTo(270, 235);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // Derecho
+          ctx.beginPath();
+          ctx.moveTo(370, 180);
+          ctx.lineTo(318, 212);
+          ctx.lineTo(330, 235);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // Ojos/Pupilas
+          ctx.beginPath();
+          ctx.arc(266, 210, 5, 0, Math.PI * 2);
+          ctx.arc(334, 210, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+
+          // --- 7. NARIZ ---
+          ctx.beginPath();
+          ctx.moveTo(292, 286);
+          ctx.lineTo(308, 286);
+          ctx.lineTo(300, 292);
+          ctx.closePath();
+          ctx.fillStyle = '#111111';
+          ctx.fill();
+        })();
+
+      };
+    </script>
+  </body>
+</html>
