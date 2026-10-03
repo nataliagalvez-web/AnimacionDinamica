@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <title>Mi Paint - Carta en Sobre</title>
+    <style>
+      body {
+        background-color: #ffffff; /* Fondo blanco acorde a la imagen del sobre */
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+      }
+
+      /* Estilo para el título */
+      h1 {
+        color: #321f12;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0 0 5px 0;
+        letter-spacing: 1px;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: #ffffff;
+        padding: 10px 20px;
+        border-radius: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .colores {
+        display: flex;
+        gap: 10px;
+      }
+
+      .colores button {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .colores button:hover {
+        transform: scale(1.15);
+      }
+
+      .colores button.active {
+        border-color: #321f12;
+      }
+
+      #clearCanvas {
+        background-color: #321f12;
+        color: #ffffff;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+
+      .envelope-wrapper {
+        position: relative;
+        width: 500px;
+        height: 600px;
+        margin-top: 100px; /* Margen superior para la elevación del canvas */
+      }
+
+      /* Sobre posicionado más abajo */
+      .sobre-img {
+        position: absolute;
+        bottom: -40px;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      /* Canvas elevado más arriba */
+      #canvas {
+        position: absolute;
+        top: -80px;
+        left: 50px;
+        width: 400px;
+        height: 400px;
+        background-color: #f3eed7;
+        border-radius: 4px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        z-index: 2;
+        cursor: crosshair;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="container">
+      <!-- Título principal -->
+      <h1>Escribe tu carta</h1>
+
+      <div class="toolbar">
+        <div class="colores">
+          <button style="background: #A15D66;" value="#A15D66" class="active"></button>
+          <button style="background: #808249;" value="#808249"></button>
+          <button style="background: #321F12;" value="#321F12"></button>
+          <button style="background: #E1B4A1;" value="#E1B4A1"></button>
+        </div>
+        <button id="clearCanvas" type="button">Limpiar</button>
+      </div>
+
+      <div class="envelope-wrapper">
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <img src="sobre.jpe" alt="Sobre" class="sobre-img">
+      </div>
+    </div>
+
+    <script>
+    window.onload = function () {
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+      var isDrawing = false;
+
+      // Estilo inicial del trazo
+      context.strokeStyle = '#A15D66';
+      context.lineWidth = 3;
+      context.lineCap = 'round';
+      context.lineJoin = 'round';
+
+      // Cálculo de posición en el canvas
+      function getPos(e) {
+        var rect = canvas.getBoundingClientRect();
+        var scaleX = canvas.width / rect.width;
+        var scaleY = canvas.height / rect.height;
+        return {
+          x: (e.clientX - rect.left) * scaleX,
+          y: (e.clientY - rect.top) * scaleY
+        };
+      }
+
+      // Eventos del mouse
+      canvas.addEventListener('mousedown', function (e) {
+        isDrawing = true;
+        var pos = getPos(e);
+        context.beginPath();
+        context.moveTo(pos.x, pos.y);
+      });
+
+      canvas.addEventListener('mousemove', function (e) {
+        if (!isDrawing) return;
+        var pos = getPos(e);
+        context.lineTo(pos.x, pos.y);
+        context.stroke();
+      });
+
+      canvas.addEventListener('mouseup', function () {
+        isDrawing = false;
+      });
+
+      canvas.addEventListener('mouseleave', function () {
+        isDrawing = false;
+      });
+
+      // Selección de colores
+      var botones = document.querySelectorAll('.colores button');
+      botones.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          botones.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          context.strokeStyle = this.value;
+        });
+      });
+
+      // Limpiar canvas
+      document.getElementById('clearCanvas').addEventListener('click', function() {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+      });
+    };
+    </script>
+  </body>
+</html>
