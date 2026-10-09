@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reloj Combinado Minimalista</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffffff; /* Fondo blanco */
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        /* Contenedor principal para alinear verticalmente ambos relojes */
+        .contenedor-reloj {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px; /* Espacio entre el reloj de manecillas y el digital */
+        }
+
+        /* Área invisible para las manecillas */
+        .reloj-analogico {
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+
+        /* Punto central donde se unen las manecillas */
+        .reloj-analogico::after {
+            content: '';
+            width: 14px;
+            height: 14px;
+            background-color: #000000; /* Centro negro */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        /* Estilo base de las manecillas en negro */
+        .manecilla {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 4px;
+            transform: translateX(-50%) rotate(0deg);
+            background-color: #000000; /* Todas las manecillas negras */
+        }
+
+        .hora {
+            width: 8px;
+            height: 70px;
+        }
+
+        .minuto {
+            width: 5px;
+            height: 110px;
+            opacity: 0.8; /* Ligera transparencia para diferenciarla de la hora */
+        }
+
+        .segundo {
+            width: 2px;
+            height: 120px;
+        }
+
+        /* Estilo para el reloj digital */
+        .reloj-digital {
+            color: #000000; /* Texto digital negro */
+            font-size: 3rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="contenedor-reloj">
+        <!-- Reloj de Manecillas (Sin esfera ni color de fondo) -->
+        <div class="reloj-analogico">
+            <div class="manecilla hora" id="manecilla-hora"></div>
+            <div class="manecilla minuto" id="manecilla-minuto"></div>
+            <div class="manecilla segundo" id="manecilla-segundo"></div>
+        </div>
+
+        <!-- Reloj Digital debajo -->
+        <div class="reloj-digital" id="reloj-digital">00:00:00</div>
+    </div>
+
+    <script>
+        const agujaHora = document.getElementById('manecilla-hora');
+        const agujaMinuto = document.getElementById('manecilla-minuto');
+        const agujaSegundo = document.getElementById('manecilla-segundo');
+        const displayDigital = document.getElementById('reloj-digital');
+
+        function actualizarRelojes() {
+            const ahora = new Date();
+            
+            const segundos = ahora.getSeconds();
+            const minutos = ahora.getMinutes();
+            const horas = ahora.getHours();
+
+            // --- Lógica del Reloj de Manecillas ---
+            const gradosSegundos = (segundos / 60) * 360;
+            const gradosMinutos = ((minutos + segundos / 60) / 60) * 360;
+            const gradosHoras = ((horas % 12 + minutos / 60) / 12) * 360;
+
+            agujaSegundo.style.transform = `translateX(-50%) rotate(${gradosSegundos}deg)`;
+            agujaMinuto.style.transform = `translateX(-50%) rotate(${gradosMinutos}deg)`;
+            agujaHora.style.transform = `translateX(-50%) rotate(${gradosHoras}deg)`;
+
+            // --- Lógica del Reloj Digital ---
+            let strHoras = horas.toString().padStart(2, '0');
+            let strMinutos = minutos.toString().padStart(2, '0');
+            let strSegundos = segundos.toString().padStart(2, '0');
+            
+            displayDigital.textContent = `${strHoras}:${strMinutos}:${strSegundos}`;
+        }
+
+        // Sincronización a cada segundo
+        setInterval(actualizarRelojes, 1000);
+        actualizarRelojes();
+    </script>
+
+</body>
+</html>
