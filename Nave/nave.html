@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulación de Nave Espacial</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: #000000;
+        color: #ffffff;
+        font-family: 'Courier New', Courier, monospace;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+      canvas {
+        background-color: #000000;
+        display: block;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        border: 1px solid #333;
+      }
+      aside {
+        margin-top: 10px;
+        color: #888888;
+        font-size: 14px;
+        text-align: center;
+        user-select: none;
+      }
+      .controls {
+        color: #00ffcc;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <aside>
+      Controles: <span class="controls">W</span> Acelerar | <span class="controls">A</span> Rotar Izquierda | <span class="controls">S</span> Frenar/Reversa | <span class="controls">D</span> Rotar Derecha
+    </aside>
+
+    <script>
+      // ==========================================
+      // 1. CLASE BALL (Pelota para Estrellas)
+      // ==========================================
+      function Ball(radius, color) {
+        if (radius === undefined) { radius = 2; }
+        if (color === undefined) { color = "#ffffff"; }
+        this.x = 0;
+        this.y = 0;
+        this.radius = radius;
+        this.vx = 0;
+        this.vy = 0;
+        this.rotation = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.color = color;
+        this.lineWidth = 0;
+      }
+
+      Ball.prototype.draw = function (context) {
+        context.save();
+        context.translate(this.x, this.y);
+        context.rotate(this.rotation);
+        context.scale(this.scaleX, this.scaleY);
+        
+        context.lineWidth = this.lineWidth;
+        context.fillStyle = this.color;
+        context.beginPath();
+        context.arc(0, 0, this.radius, 0, (Math.PI * 2), true);
+        context.closePath();
+        context.fill();
+        if (this.lineWidth > 0) {
+          context.stroke();
+        }
+        context.restore();
+      };
+
+      // ==========================================
+      // 2. CLASE SHIP (Nave Espacial Personalizada)
+      // ==========================================
+      function Ship() {
+        this.x = 0;
+        this.y = 0;
+        this.width = 30;
+        this.height = 30;
+        this.rotation = 0;
+        this.showFlame = false;
+      }
+
+      Ship.prototype.draw = function (context) {
+        context.save();
+        context.translate(this.x, this.y);
+        context.rotate(this.rotation);
+
+        // Cuerpo principal de la nave espacial (diseño personalizado)
+        context.lineWidth = 2;
+        context.strokeStyle = "#00ffff";
+        context.fillStyle = "#0d1b2a";
+        
+        context.beginPath();
+        context.moveTo(20, 0);       // Punta frontal
+        context.lineTo(-15, -12);    // Ala izquierda
+        context.lineTo(-8, 0);       // Centro trasero
+        context.lineTo(-15, 12);     // Ala derecha
+        context.closePath();
+        context.fill();
+        context.stroke();
+
+        // Cabina luminosa
+        context.fillStyle = "#00ffcc";
+        context.beginPath();
+        context.arc(3, 0, 4, 0, Math.PI * 2);
+        context.fill();
+
+        // Llama del propulsor (si está acelerando)
+        if (this.showFlame) {
+          context.save();
+          context.beginPath();
+          context.moveTo(-8, -5);
+          context.lineTo(-22 - Math.random() * 8, 0); // Llama dinámica animada
+          context.lineTo(-8, 5);
+          context.fillStyle = "#ff6600";
+          context.fill();
+
+          // Núcleo brillante de la llama
+          context.beginPath();
+          context.moveTo(-8, -2);
+          context.lineTo(-15 - Math.random() * 4, 0);
+          context.lineTo(-8, 2);
+          context.fillStyle = "#ffff00";
+          context.fill();
+          context.restore();
+        }
+
+        context.restore();
+      };
+
+      // ==========================================
+      // 3. LÓGICA PRINCIPAL DE LA SIMULACIÓN
+      // ==========================================
+      window.onload = function () {
+        var canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            ship = new Ship(),
+            stars = [],
+            numStars = 45, // Cantidad de estrellas en el fondo
+            vr = 0,
+            vx = 0,
+            vy = 0,
+            thrust = 0,
+            friction = 0.97; // Coeficiente de fricción (tomado de 08-ship-sim-friction.html)
+
+        // Posición inicial de la nave en el centro del canvas
+        ship.x = canvas.width / 2;
+        ship.y = canvas.height / 2;
+
+        // Inicializar estrellas (círculos blancos rebotando en el fondo)
+        for (var i = 0; i < numStars; i++) {
+          var radius = Math.random() * 2 + 1; // Tamaño de estrella
+          var star = new Ball(radius, "#ffffff");
+          star.x = Math.random() * canvas.width;
+          star.y = Math.random() * canvas.height;
+          // Velocidad aleatoria de las estrellas
+          star.vx = Math.random() * 2 - 1;
+          star.vy = Math.random() * 2 - 1;
+          stars.push(star);
+        }
+
+        // ------------------------------------------
+        // Manejo de eventos del teclado (SOLO TECLAS WASD)
+        // ------------------------------------------
+        window.addEventListener('keydown', function (event) {
+          switch (event.key.toLowerCase()) {
+            case 'a': // Rotar a la izquierda
+              vr = -4;
+              break;
+            case 'd': // Rotar a la derecha
+              vr = 4;
+              break;
+            case 'w': // Empuje / Adelante
+              thrust = 0.08;
+              ship.showFlame = true;
+              break;
+            case 's': // Reversa / Freno
+              thrust = -0.03;
+              ship.showFlame = false;
+              break;
+          }
+        }, false);
+
+        window.addEventListener('keyup', function (event) {
+          var key = event.key.toLowerCase();
+          if (key === 'a' || key === 'd') {
+            vr = 0;
+          }
+          if (key === 'w' || key === 's') {
+            thrust = 0;
+            ship.showFlame = false;
+          }
+        }, false);
+
+        // ------------------------------------------
+        // Bucle de Animación (requestAnimationFrame)
+        // ------------------------------------------
+        (function drawFrame () {
+          window.requestAnimationFrame(drawFrame, canvas);
+          
+          // Fondo completamente negro (#000000)
+          context.fillStyle = "#000000";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+
+          var left = 0,
+              right = canvas.width,
+              top = 0,
+              bottom = canvas.height;
+
+          // ----------------------------------------
+          // A) Dibujar y mover las Estrellas (Lógica de Bouncing/Rebote)
+          // ----------------------------------------
+          for (var i = 0; i < stars.length; i++) {
+            var star = stars[i];
+
+            star.x += star.vx;
+            star.y += star.vy;
+
+            // Límites y rebote (Bouncing logic adaptada de 04-bouncing-1.html)
+            if (star.x + star.radius > right) {
+              star.x = right - star.radius;
+              star.vx *= -1;
+            } else if (star.x - star.radius < left) {
+              star.x = left + star.radius;
+              star.vx *= -1;
+            }
+
+            if (star.y + star.radius > bottom) {
+              star.y = bottom - star.radius;
+              star.vy *= -1;
+            } else if (star.y - star.radius < top) {
+              star.y = top + star.radius;
+              star.vy *= -1;
+            }
+
+            star.draw(context);
+          }
+
+          // ----------------------------------------
+          // B) Mover la Nave (Rotación, Empuje, Fricción y Límites)
+          // ----------------------------------------
+          ship.rotation += vr * Math.PI / 180;
+          var angle = ship.rotation,
+              ax = Math.cos(angle) * thrust,
+              ay = Math.sin(angle) * thrust;
+
+          // Aceleración
+          vx += ax;
+          vy += ay;
+
+          // Aplicar Fricción (08-ship-sim-friction.html)
+          vx *= friction;
+          vy *= friction;
+
+          // Actualizar posición de la nave
+          ship.x += vx;
+          ship.y += vy;
+
+          // Screen Wrapping (Límites envoltura de la nave)
+          if (ship.x - ship.width / 2 > right) {
+            ship.x = left - ship.width / 2;
+          } else if (ship.x + ship.width / 2 < left) {
+            ship.x = right + ship.width / 2;
+          }
+          if (ship.y - ship.height / 2 > bottom) {
+            ship.y = top - ship.height / 2;
+          } else if (ship.y + ship.height / 2 < top) {
+            ship.y = bottom + ship.height / 2;
+          }
+
+          // Dibujar la nave
+          ship.draw(context);
+        }());
+      };
+    </script>
+  </body>
+</html>
